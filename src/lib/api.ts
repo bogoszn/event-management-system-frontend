@@ -119,3 +119,24 @@ export async function getMe() {
     if (!res.ok) throw new Error(data.message || "Failed to fetch user");
     return data;
 }
+export async function forgotPassword(email: string) {
+    const res = await fetch(`${API_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Request failed");
+    return data;
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+    const res = await fetch(`${API_URL}/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, newPassword }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Reset failed");
+    return data;
+}
