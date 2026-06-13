@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { loginUser } from "@/lib/api";
 import { saveTokens, saveUser } from "@/lib/auth";
 
 export default function LoginPage() {
@@ -12,7 +11,6 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [showPass, setShowPass] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [apiError, setApiError] = useState("");
     const [loading, setLoading] = useState(false);
 
     const validate = () => {
@@ -30,17 +28,26 @@ export default function LoginPage() {
         if (Object.keys(errs).length) return;
 
         setLoading(true);
-        setApiError("");
-        try {
-            const data = await loginUser(email, password);
-            saveTokens(data.accessToken, data.refreshToken);
-            saveUser(data.user);
-            router.push("/dashboard");
-        } catch (err: unknown) {
-            setApiError(err instanceof Error ? err.message : "Login failed");
-        } finally {
-            setLoading(false);
-        }
+
+        // ── MOCK AUTH ──────────────────────────────────────────────
+        // No real backend exists yet. This simulates a successful login
+        // so the dashboard and other protected pages can be demoed.
+        // Replace with a real API call once a backend is available.
+        await new Promise(r => setTimeout(r, 600)); // simulate network delay
+
+        const mockUser = {
+            id: "mock-user-1",
+            name: email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+            email,
+            role: "attendee",
+            emailVerified: true,
+        };
+
+        saveTokens("mock-access-token", "mock-refresh-token");
+        saveUser(mockUser);
+        // ───────────────────────────────────────────────────────────
+
+        router.push("/dashboard");
     };
 
     return (
@@ -79,13 +86,12 @@ export default function LoginPage() {
                         <p className="text-[13px] text-[#6A6A6A]">Sign in to access your tickets and events</p>
                     </div>
 
-                    {apiError && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 mb-5 text-[13px] text-red-400">
-                            {apiError}
-                        </div>
-                    )}
+                    {/* Demo notice */}
+                    <div className="bg-[#6BBFFF]/8 border border-[#6BBFFF]/20 rounded-lg px-4 py-3 mb-5 text-[12px] text-[#6BBFFF] leading-relaxed">
+                        This is a portfolio demo. Enter any email and password to sign in — no real account needed.
+                    </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-0">
+                    <form onSubmit={handleSubmit}>
                         {/* Email */}
                         <div className="mb-4">
                             <label className="block text-[13px] text-[#9A9A9A] mb-2">Email address</label>

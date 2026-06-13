@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { registerUser } from "@/lib/api";
+import { saveTokens, saveUser } from "@/lib/auth";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -11,9 +11,7 @@ export default function RegisterPage() {
     const [showPass, setShowPass] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [apiError, setApiError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
 
     const set = (f: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
         setForm(p => ({ ...p, [f]: e.target.value }));
@@ -48,37 +46,28 @@ export default function RegisterPage() {
         if (Object.keys(errs).length) return;
 
         setLoading(true);
-        setApiError("");
-        try {
-            await registerUser(form.name, form.email, form.password, "attendee");
-            setSuccess(true);
-        } catch (err: unknown) {
-            setApiError(err instanceof Error ? err.message : "Registration failed");
-        } finally {
-            setLoading(false);
-        }
-    };
 
-    if (success) return (
-        <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center">
-            <div className="text-center">
-                <div className="w-14 h-14 rounded-full bg-[#4CAF82]/10 border border-[#4CAF82]/30 flex items-center justify-center mx-auto mb-4">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4CAF82" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                        <polyline points="22,6 12,13 2,6" />
-                    </svg>
-                </div>
-                <h2 className="text-white text-[18px] font-bold mb-2">Check your inbox</h2>
-                <p className="text-[#6A6A6A] text-[13px]">
-                    Verification link sent to<br />
-                    <span className="text-[#9A9A9A]">{form.email}</span>
-                </p>
-                <Link href="/login" className="inline-block mt-6 text-[13px] text-white underline">
-                    Back to sign in
-                </Link>
-            </div>
-        </div>
-    );
+        // ── MOCK AUTH ──────────────────────────────────────────────
+        // No real backend exists yet. This simulates a successful
+        // registration + auto-login so the dashboard can be demoed
+        // immediately without an email verification step.
+        // Replace with a real API call once a backend is available.
+        await new Promise(r => setTimeout(r, 600)); // simulate network delay
+
+        const mockUser = {
+            id: "mock-user-1",
+            name: form.name,
+            email: form.email,
+            role: "attendee",
+            emailVerified: true,
+        };
+
+        saveTokens("mock-access-token", "mock-refresh-token");
+        saveUser(mockUser);
+        // ───────────────────────────────────────────────────────────
+
+        router.push("/dashboard");
+    };
 
     return (
         <div className="min-h-screen bg-[#1E1E1E] flex flex-col">
@@ -116,11 +105,10 @@ export default function RegisterPage() {
                         <p className="text-[13px] text-[#6A6A6A]">Join entri and start discovering events near you</p>
                     </div>
 
-                    {apiError && (
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3 mb-5 text-[13px] text-red-400">
-                            {apiError}
-                        </div>
-                    )}
+                    {/* Demo notice */}
+                    <div className="bg-[#6BBFFF]/8 border border-[#6BBFFF]/20 rounded-lg px-4 py-3 mb-5 text-[12px] text-[#6BBFFF] leading-relaxed">
+                        This is a portfolio demo. Any details work — no real account is created.
+                    </div>
 
                     <form onSubmit={handleSubmit}>
                         {/* Name */}
@@ -128,7 +116,7 @@ export default function RegisterPage() {
                             <label className="block text-[13px] text-[#9A9A9A] mb-2">Full name</label>
                             <input
                                 type="text" value={form.name} onChange={set("name")}
-                                placeholder="Full Name" autoComplete="name"
+                                placeholder="Your full name" autoComplete="name"
                                 className="w-full bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg px-4 py-3 text-[14px] text-white placeholder-[#4A4A4A] outline-none focus:border-[#5A5A5A] transition-colors"
                             />
                             {errors.name && <p className="text-red-400 text-[12px] mt-1.5">{errors.name}</p>}
@@ -139,13 +127,11 @@ export default function RegisterPage() {
                             <label className="block text-[13px] text-[#9A9A9A] mb-2">Email address</label>
                             <input
                                 type="email" value={form.email} onChange={set("email")}
-                                placeholder="Email Address" autoComplete="email"
+                                placeholder="Your email address" autoComplete="email"
                                 className="w-full bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg px-4 py-3 text-[14px] text-white placeholder-[#4A4A4A] outline-none focus:border-[#5A5A5A] transition-colors"
                             />
                             {errors.email && <p className="text-red-400 text-[12px] mt-1.5">{errors.email}</p>}
                         </div>
-
-
 
                         {/* Password */}
                         <div className="mb-4">
