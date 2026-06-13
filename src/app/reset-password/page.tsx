@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { resetPassword } from "@/lib/api";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
 
@@ -59,7 +60,6 @@ export default function ResetPasswordPage() {
         }
     };
 
-    // No token in URL
     if (!token) return (
         <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center px-4">
             <div className="text-center">
@@ -77,7 +77,6 @@ export default function ResetPasswordPage() {
         </div>
     );
 
-    // Success state
     if (success) return (
         <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center px-4">
             <div className="text-center">
@@ -88,10 +87,7 @@ export default function ResetPasswordPage() {
                 </div>
                 <h2 className="text-[20px] font-bold text-white mb-2">Password reset</h2>
                 <p className="text-[13px] text-[#6A6A6A] mb-6">Your password has been updated successfully.</p>
-                <Link
-                    href="/login"
-                    className="inline-block px-6 py-3 bg-white rounded-lg text-[13px] font-semibold text-[#111] hover:bg-[#E8E8E8] transition-colors"
-                >
+                <Link href="/login" className="inline-block px-6 py-3 bg-white rounded-lg text-[13px] font-semibold text-[#111] hover:bg-[#E8E8E8] transition-colors">
                     Sign in
                 </Link>
             </div>
@@ -100,7 +96,6 @@ export default function ResetPasswordPage() {
 
     return (
         <div className="min-h-screen bg-[#1E1E1E] flex flex-col">
-            {/* Navbar */}
             <nav className="h-14 border-b border-[#2A2A2A] flex items-center justify-between px-12">
                 <Link href="/" className="font-bold text-[17px] tracking-tight text-white">
                     entri<span className="text-[#4CAF82]">.</span>ng
@@ -111,10 +106,8 @@ export default function ResetPasswordPage() {
                 </div>
             </nav>
 
-            {/* Form */}
             <div className="flex-1 flex items-center justify-center px-4 py-12">
                 <div className="w-full max-w-[400px]">
-
                     <div className="mb-8">
                         <h1 className="text-[22px] font-bold text-white tracking-tight mb-2">Set new password</h1>
                         <p className="text-[13px] text-[#6A6A6A]">
@@ -129,7 +122,6 @@ export default function ResetPasswordPage() {
                     )}
 
                     <form onSubmit={handleSubmit}>
-                        {/* New password */}
                         <div className="mb-4">
                             <label className="block text-[13px] text-[#9A9A9A] mb-2">New password</label>
                             <div className="relative">
@@ -162,7 +154,6 @@ export default function ResetPasswordPage() {
                             {errors.password && <p className="text-red-400 text-[12px] mt-1.5">{errors.password}</p>}
                         </div>
 
-                        {/* Confirm password */}
                         <div className="mb-6">
                             <label className="block text-[13px] text-[#9A9A9A] mb-2">Confirm new password</label>
                             <div className="relative">
@@ -200,5 +191,13 @@ export default function ResetPasswordPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#1E1E1E]" />}>
+            <ResetPasswordForm />
+        </Suspense>
     );
 }

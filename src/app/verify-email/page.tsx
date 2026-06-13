@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
 
@@ -42,7 +43,6 @@ export default function VerifyEmailPage() {
 
     return (
         <div className="min-h-screen bg-[#1E1E1E] flex flex-col">
-            {/* Navbar */}
             <nav className="h-14 border-b border-[#2A2A2A] flex items-center justify-between px-12">
                 <Link href="/" className="font-bold text-[17px] tracking-tight text-white">
                     entri<span className="text-[#4CAF82]">.</span>ng
@@ -53,11 +53,9 @@ export default function VerifyEmailPage() {
                 </div>
             </nav>
 
-            {/* Body */}
             <div className="flex-1 flex items-center justify-center px-4">
                 <div className="text-center w-full max-w-[400px]">
 
-                    {/* Loading */}
                     {status === "loading" && (
                         <>
                             <div className="w-14 h-14 rounded-full bg-[#2A2A2A] border border-[#3A3A3A] flex items-center justify-center mx-auto mb-5">
@@ -72,7 +70,6 @@ export default function VerifyEmailPage() {
                         </>
                     )}
 
-                    {/* Success */}
                     {status === "success" && (
                         <>
                             <div className="w-14 h-14 rounded-full bg-[#4CAF82]/10 border border-[#4CAF82]/30 flex items-center justify-center mx-auto mb-5">
@@ -82,16 +79,12 @@ export default function VerifyEmailPage() {
                             </div>
                             <h2 className="text-[20px] font-bold text-white mb-2">Email verified</h2>
                             <p className="text-[13px] text-[#6A6A6A] mb-8">{message}</p>
-                            <Link
-                                href="/login"
-                                className="inline-block px-6 py-3 bg-white rounded-lg text-[13px] font-semibold text-[#111] hover:bg-[#E8E8E8] transition-colors"
-                            >
+                            <Link href="/login" className="inline-block px-6 py-3 bg-white rounded-lg text-[13px] font-semibold text-[#111] hover:bg-[#E8E8E8] transition-colors">
                                 Sign in to your account
                             </Link>
                         </>
                     )}
 
-                    {/* Error */}
                     {status === "error" && (
                         <>
                             <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-5">
@@ -104,10 +97,7 @@ export default function VerifyEmailPage() {
                             <h2 className="text-[20px] font-bold text-white mb-2">Verification failed</h2>
                             <p className="text-[13px] text-[#6A6A6A] mb-8">{message}</p>
                             <div className="flex flex-col gap-3 items-center">
-                                <Link
-                                    href="/register"
-                                    className="inline-block px-6 py-3 bg-white rounded-lg text-[13px] font-semibold text-[#111] hover:bg-[#E8E8E8] transition-colors"
-                                >
+                                <Link href="/register" className="inline-block px-6 py-3 bg-white rounded-lg text-[13px] font-semibold text-[#111] hover:bg-[#E8E8E8] transition-colors">
                                     Back to register
                                 </Link>
                                 <Link href="/login" className="text-[13px] text-[#9A9A9A] hover:text-white transition-colors">
@@ -116,9 +106,16 @@ export default function VerifyEmailPage() {
                             </div>
                         </>
                     )}
-
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#1E1E1E]" />}>
+            <VerifyEmailContent />
+        </Suspense>
     );
 }
