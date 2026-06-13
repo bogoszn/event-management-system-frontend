@@ -139,7 +139,7 @@ export default function RegisterPage() {
                             <label className="block text-[13px] text-[#9A9A9A] mb-2">Email address</label>
                             <input
                                 type="email" value={form.email} onChange={set("email")}
-                                placeholder="[EMAIL_ADDRESS]" autoComplete="email"
+                                placeholder="Email Address" autoComplete="email"
                                 className="w-full bg-[#2A2A2A] border border-[#3A3A3A] rounded-lg px-4 py-3 text-[14px] text-white placeholder-[#4A4A4A] outline-none focus:border-[#5A5A5A] transition-colors"
                             />
                             {errors.email && <p className="text-red-400 text-[12px] mt-1.5">{errors.email}</p>}
